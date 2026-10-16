@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>FormVault – saved details</title>
+<style>
+  :root{--bg:#f6f7fb;--card:#fff;--ink:#1d2433;--mute:#5b6578;--line:#d5dbe8;--accent:#2b5cff}
+  @media (prefers-color-scheme:dark){:root{--bg:#141926;--card:#1b2130;--ink:#e8ecf5;--mute:#9aa6bf;--line:#33405c}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
+  main{max-width:820px;margin:0 auto;padding:32px 20px 80px}
+  h1{margin:0 0 4px;font-size:24px}
+  p.sub{margin:0 0 20px;color:var(--mute);max-width:62ch}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;
+    display:grid;grid-template-columns:1fr 1.2fr auto;gap:10px;align-items:start}
+  label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
+  input,textarea,select{width:100%;font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+  textarea{min-height:36px;resize:vertical}
+  .full{grid-column:1/-1}
+  button{font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;cursor:pointer}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.del{color:#c0392b}
+  .bar{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;padding:14px 0;background:var(--bg)}
+  #status{color:var(--mute)}
+  #gateForm{max-width:360px}
+  .field{margin-bottom:12px}
+  #gateMsg{color:var(--mute);margin-left:8px}
+  button.link{border:0;background:none;padding:0;color:#c0392b;text-decoration:underline;font-size:13px}
+  label.mt{margin-top:8px}
+  .bar{flex-wrap:wrap}
+  .filemeta{font-size:13px;color:var(--mute);margin-top:4px}
+</style>
+<main>
+  <section id="gate" hidden>
+    <h1 id="gateTitle"></h1>
+    <p class="sub" id="gateSub"></p>
+    <form id="gateForm">
+      <div class="field" id="pw0Wrap"><label for="pw0">Current password</label><input type="password" id="pw0" autocomplete="current-password"></div>
+      <div class="field"><label for="pw" id="pwLabel">Master password</label><input type="password" id="pw" autocomplete="current-password" required></div>
+      <div class="field" id="pw2Wrap"><label for="pw2">Confirm password</label><input type="password" id="pw2" autocomplete="new-password"></div>
+      <button class="primary" id="gateBtn"></button>
+      <button type="button" id="cancel">Cancel</button>
+      <span id="gateMsg"></span>
+    </form>
+    <p><button type="button" class="link" id="forgot">Forgot password? Delete everything and start fresh</button></p>
+  </section>
+  <section id="editor" hidden>
+    <h1>Saved details</h1>
+    <p class="sub">Add the info you fill in often. Keywords tell the extension which form fields each item belongs to (matched against a field's name, label and placeholder; the label counts too). Right-click any form field and choose "Fill with FormVault…" to pick from everything you've saved. Everything is encrypted with your master password and stored only in this browser. It locks after 15 minutes of inactivity and when Chrome closes.</p>
+    <div id="list"></div>
+    <div class="bar">
+      <button id="addText">+ Add text</button>
+      <button id="addNumber">+ Add number</button>
+      <button id="addDate">+ Add date</button>
+      <button id="addFile">+ Add file</button>
+      <button class="primary" id="save">Save changes</button>
+      <button id="changePw">Change password</button>
+      <button id="lock">Lock</button>
+      <span id="status"></span>
+    </div>
+  </section>
+</main>
+<script src="options.js"></script>

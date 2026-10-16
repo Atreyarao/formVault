@@ -1,0 +1,11 @@
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+chrome-store/
+
+# Local tooling
+node_modules/
+.codegraph/

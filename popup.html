@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  body{margin:0;width:250px;font:14px system-ui,sans-serif;padding:12px;display:grid;gap:8px;color:#1d2433}
+  button{font:inherit;padding:9px 12px;border-radius:8px;border:1px solid #c9d1e0;background:#fff;cursor:pointer;text-align:left}
+  button.main{background:#2b5cff;color:#fff;border-color:#2b5cff}
+  button:hover{filter:brightness(.96)}
+  small{color:#5b6578}
+  @media (prefers-color-scheme:dark){body{background:#1b2130;color:#e8ecf5}button{background:#242c40;color:#e8ecf5;border-color:#33405c}button.main{background:#2b5cff}small{color:#9aa6bf}}
+</style>
+<button class="main" id="fill">Fill this page</button>
+<button id="manage">Manage saved details</button>
+<button id="lock">…</button>
+<small id="keys"></small>
+<script src="popup.js"></script>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4C7DFF"/><stop offset="1" stop-color="#1E3BC9"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC94A"/><stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <!-- form sheet -->
+  <rect x="22" y="18" width="62" height="82" rx="9" fill="#fff"/>
+  <rect x="32" y="31" width="22" height="6" rx="3" fill="#9FB4F5"/>
+  <rect x="32" y="43" width="42" height="9" rx="3" fill="#E3E9FC"/>
+  <rect x="32" y="58" width="22" height="6" rx="3" fill="#9FB4F5"/>
+  <rect x="32" y="70" width="30" height="9" rx="3" fill="#E3E9FC"/>
+  <!-- lock, outlined in the background colour so it separates from the sheet -->
+  <g stroke="#2546D6" stroke-width="5" paint-order="stroke" stroke-linejoin="round">
+    <path d="M74 80v-9a13 13 0 0 1 26 0v9" fill="none" stroke="#2546D6" stroke-width="15" stroke-linecap="round"/>
+    <path d="M74 80v-9a13 13 0 0 1 26 0v9" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
+    <rect x="64" y="78" width="46" height="36" rx="8" fill="url(#gold)"/>
+  </g>
+  <circle cx="87" cy="93" r="5" fill="#7A4A00"/>
+  <rect x="84.5" y="95" width="5" height="10" rx="2.5" fill="#7A4A00"/>
+</svg>

@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "FormVault",
+  "version": "1.2.0",
+  "description": "Fill forms in one keystroke with your saved details, dates, dropdown answers and files — encrypted with your master password.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FormVault",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "options_page": "options.html",
+  "commands": {
+    "fill-all": {
+      "suggested_key": {
+        "default": "Alt+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Auto-fill every matching field on the page"
+    },
+    "show-picker": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "MacCtrl+Shift+S"
+      },
+      "description": "Show saved details list under the focused field"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
