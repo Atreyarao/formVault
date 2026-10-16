@@ -1,8 +1,10 @@
-<p align="center"><img src="icons/icon128.png" width="96" alt="FormVault icon"></p>
+<p align="center"><img src="docs/images/banner.png" alt="FormVault: fill any form in one keystroke, encrypted with your master password"></p>
 
 # FormVault
 
 A Chrome extension that fills web forms with your saved details and files: names, emails, dates, numbers, dropdown answers and uploads like your résumé. Everything is encrypted with a master password and never leaves your browser.
+
+<p align="center"><img src="docs/images/fill-whole-form.png" width="800" alt="A job application form filled in one shortcut: text, gender dropdown, date of birth, country, years of experience, a radio button and a résumé upload"></p>
 
 ## Features
 
@@ -25,6 +27,8 @@ FormVault isn't on the Chrome Web Store yet, so you load it as an unpacked exten
 3. Click **Load unpacked** and select this folder.
 4. The settings page opens. Set a **master password** of at least 8 characters.
 
+<p align="center"><img src="docs/images/master-password.png" width="640" alt="The 'Set a master password' screen"></p>
+
 > **There is no password recovery.** Your data is encrypted with the password itself. If you forget it, you can only delete everything and start again.
 
 To update after changing the code, click the reload icon on the FormVault card in `chrome://extensions`.
@@ -43,6 +47,8 @@ Open the settings page: click the toolbar icon, then **Manage saved details**. E
 
 Click **Save changes**. Nothing is stored until you do.
 
+<p align="center"><img src="docs/images/saved-details.png" width="640" alt="The saved details editor with label, type, value and keywords for each item"></p>
+
 Keywords are matched against a form field's name, id, label, placeholder and ARIA label. When several items match, the longest matching keyword wins. For example, `email address` beats `address`.
 
 ### 2. Fill a form
@@ -57,6 +63,8 @@ On a Mac, `Control` is the actual Control key, not Cmd. To change the shortcuts,
 
 In the picker, use **↑ / ↓** to move, **Enter** to fill and **Esc** to close. In the right-click list, items that don't fit the field are greyed out.
 
+<p align="center"><img src="docs/images/right-click-picker.png" width="640" alt="The picker listing saved details under a form field"></p>
+
 **Fill all** never overwrites a field that already has a value.
 
 ### 3. Lock, unlock and passwords
@@ -66,6 +74,8 @@ In the picker, use **↑ / ↓** to move, **Enter** to fill and **Esc** to close
 - **Forgot password:** on the unlock screen, click **Forgot password? Delete everything and start fresh**.
 
 Warnings appear as a dialog in the middle of the page, so you can't miss them. A successful fill shows a small notice in the corner.
+
+<p align="center"><img src="docs/images/locked.png" width="640" alt="The 'FormVault is locked' dialog with Unlock and Close buttons"></p>
 
 ## Architecture
 
