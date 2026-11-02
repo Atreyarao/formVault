@@ -77,6 +77,14 @@ Warnings appear as a dialog in the middle of the page, so you can't miss them. A
 
 <p align="center"><img src="docs/images/locked.png" width="640" alt="The 'FormVault is locked' dialog with Unlock and Close buttons"></p>
 
+### 4. Back up or move to another profile
+- **Export** (settings page): saves your changes, then downloads `formvault-backup-<date>.json`. The file is still encrypted with your master password, so it's safe to keep in cloud storage.
+- **Import** (settings page): choose a backup and enter the password it was made with.
+  - **Merge** adds items you don't have, fills in your empty ones, and keeps your values when both have one. Items count as the same if they share a label and type.
+  - **Replace** swaps everything for the backup's contents.
+  - Either way, the data is re-encrypted with this profile's password.
+- **New profile or computer:** on the "Set a master password" screen, click **Restore from a backup file** instead. The backup's password becomes your master password.
+
 ## Architecture
 
 ### Files

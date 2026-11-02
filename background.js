@@ -49,6 +49,29 @@ async function getKey(touch = true) {
 }
 const unlockWith = (key) => chrome.storage.session.set({ key, lastUsed: Date.now() });
 
+// ---------- backup ----------
+const BACKUP_FORMAT = "formvault-backup";
+const isEmptyItem = (it) => it.type === "file" ? !it.dataUrl : !String(it.value ?? "").trim();
+
+// Items are the same if they share a type and label. Adds new ones, fills in empty ones, keeps yours otherwise.
+function mergeItems(current, incoming) {
+  const items = current.map((it) => ({ ...it }));
+  const sameAs = (a, b) => a.type === b.type && String(a.label || "").trim().toLowerCase() === String(b.label || "").trim().toLowerCase();
+  let added = 0, filled = 0, kept = 0;
+  for (const inc of incoming) {
+    const mine = items.find((it) => sameAs(it, inc));
+    if (!mine) {
+      const id = items.some((it) => it.id === inc.id) ? `i${Date.now()}_${added}` : inc.id;
+      items.push({ ...inc, id });
+      added++;
+    } else if (isEmptyItem(mine) && !isEmptyItem(inc)) {
+      Object.assign(mine, { ...inc, id: mine.id });
+      filled++;
+    } else kept++;
+  }
+  return { items, summary: `Imported: ${added} new, ${filled} filled in, ${kept} already here (kept yours)` };
+}
+
 // Closing the last window counts as closing Chrome (on macOS the app keeps running without windows).
 chrome.windows.onRemoved.addListener(async () => {
   if (!(await chrome.windows.getAll()).length) lock();
@@ -98,6 +121,34 @@ const handlers = {
     return {};
   },
   async lock() { await lock(); return {}; },
+  // The backup is the vault exactly as stored: still encrypted with the current master password.
+  async exportVault() {
+    if (!(await getKey())) return { locked: true };
+    const { vault } = await chrome.storage.local.get("vault");
+    return { backup: { format: BACKUP_FORMAT, version: 1, exportedAt: new Date().toISOString(), vault } };
+  },
+  async importVault({ backup, password, mode }) {
+    const b = backup?.vault;
+    if (backup?.format !== BACKUP_FORMAT || !b?.salt || !b?.ct) return { error: "This isn't a FormVault backup file" };
+    const backupKey = await deriveKey(password, fromB64(b.salt), b.iter);
+    let incoming;
+    try { incoming = await decryptJSON(backupKey, b); } catch { return { error: "Wrong password for this backup" }; }
+    const { vault } = await chrome.storage.local.get("vault");
+    if (!vault) {
+      // Fresh profile: the backup becomes the vault, and its password becomes the master password.
+      await chrome.storage.local.set({ vault: { salt: b.salt, iter: b.iter, iv: b.iv, ct: b.ct } });
+      await chrome.storage.local.remove("items");
+      await unlockWith(backupKey);
+      return { items: incoming, summary: `Restored ${incoming.length} items from the backup` };
+    }
+    const key = await getKey();
+    if (!key) return { locked: true };
+    const { items, summary } = mode === "replace"
+      ? { items: incoming, summary: `Replaced with ${incoming.length} items from the backup` }
+      : mergeItems(await decryptJSON(key, vault), incoming);
+    await chrome.storage.local.set({ vault: { ...vault, ...(await encryptJSON(key, items)) } }); // re-encrypt with this profile's password
+    return { items, summary };
+  },
   async getItems() {
     const { vault } = await chrome.storage.local.get("vault");
     if (!vault) return { locked: true, setup: true };

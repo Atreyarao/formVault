@@ -24,6 +24,7 @@
   .field{margin-bottom:12px}
   #gateMsg{color:var(--mute);margin-left:8px}
   button.link{border:0;background:none;padding:0;color:#c0392b;text-decoration:underline;font-size:13px}
+  button.link.plain{color:var(--accent)}
   label.mt{margin-top:8px}
   .bar{flex-wrap:wrap}
   .filemeta{font-size:13px;color:var(--mute);margin-top:4px}
@@ -37,10 +38,13 @@
       <div class="field"><label for="pw" id="pwLabel">Master password</label><input type="password" id="pw" autocomplete="current-password" required></div>
       <div class="field" id="pw2Wrap"><label for="pw2">Confirm password</label><input type="password" id="pw2" autocomplete="new-password"></div>
       <button class="primary" id="gateBtn"></button>
+      <button id="gateAlt" hidden></button>
       <button type="button" id="cancel">Cancel</button>
       <span id="gateMsg"></span>
     </form>
     <p><button type="button" class="link" id="forgot">Forgot password? Delete everything and start fresh</button></p>
+    <p><button type="button" class="link plain" id="restore">Moving from another browser or profile? Restore from a backup file</button></p>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
   </section>
   <section id="editor" hidden>
     <h1>Saved details</h1>
@@ -52,6 +56,8 @@
       <button id="addDate">+ Add date</button>
       <button id="addFile">+ Add file</button>
       <button class="primary" id="save">Save changes</button>
+      <button id="export">Export</button>
+      <button id="import">Import</button>
       <button id="changePw">Change password</button>
       <button id="lock">Lock</button>
       <span id="status"></span>
