@@ -61,7 +61,7 @@ Keywords are matched against a form field's name, id, label, placeholder and ARI
 
 On a Mac, `Control` is the actual Control key, not Cmd. To change the shortcuts, go to `chrome://extensions/shortcuts`.
 
-In the picker, use **↑ / ↓** to move, **Enter** to fill and **Esc** to close. In the right-click list, items that don't fit the field are greyed out.
+In the picker, use **↑ / ↓** to move, **Enter** to fill and **Esc** to close. In the right-click list, items that don't fit the field are greyed out. The right-click list (and any picker with more than six items) has a search box at the top: type part of a label, keyword or saved value to narrow the list.
 
 <p align="center"><img src="docs/images/right-click-picker.png" width="640" alt="The picker listing saved details under a form field"></p>
 

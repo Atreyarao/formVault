@@ -261,20 +261,31 @@
 
   // ---------- inline picker ----------
   let host = null;
-  function closePicker() { host?.remove(); host = null; document.removeEventListener("keydown", onKey, true); }
-
   let pickerState = null;
+  function closePicker(refocus = false) {
+    const el = pickerState?.el;
+    host?.remove(); host = null; pickerState = null;
+    document.removeEventListener("keydown", onKey, true);
+    if (refocus) el?.focus({ preventScroll: true }); // the search box took focus from the field
+  }
+
+  // Moves the highlight among the rows the search left visible.
+  function highlight(idx) {
+    const { shown } = pickerState;
+    pickerState.idx = shown.length ? (idx + shown.length) % shown.length : 0;
+    pickerState.rows.forEach((r) => r.classList.remove("on"));
+    const row = shown[pickerState.idx];
+    if (row) { row.classList.add("on"); row.scrollIntoView({ block: "nearest" }); }
+  }
+
   function onKey(e) {
     if (!pickerState) return;
-    const { rows } = pickerState;
-    if (e.key === "Escape") { e.preventDefault(); closePicker(); }
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closePicker(pickerState.search); }
     else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      pickerState.idx = (pickerState.idx + (e.key === "ArrowDown" ? 1 : -1) + rows.length) % rows.length;
-      rows.forEach((r, i) => r.classList.toggle("on", i === pickerState.idx));
-      rows[pickerState.idx].scrollIntoView({ block: "nearest" });
+      highlight(pickerState.idx + (e.key === "ArrowDown" ? 1 : -1));
     } else if (e.key === "Enter") {
-      e.preventDefault(); e.stopPropagation(); rows[pickerState.idx].click();
+      e.preventDefault(); e.stopPropagation(); pickerState.shown[pickerState.idx]?.click();
     }
   }
 
@@ -295,6 +306,7 @@
     // put the best guess first
     const guess = bestMatch(el, items);
     if (guess) items.sort((a, b) => (b === guess) - (a === guess));
+    const withSearch = all || items.length > 6;
 
     host = document.createElement("div");
     host.style.cssText = "all:initial;position:absolute;z-index:2147483647;";
@@ -306,36 +318,73 @@
       <style>
         .box{font:13px/1.35 system-ui,sans-serif;background:#fff;color:#1d2433;border:1px solid #c9d1e0;
           border-radius:8px;box-shadow:0 8px 24px rgba(20,30,60,.18);min-width:${Math.max(240, r.width)}px;max-width:420px;
-          max-height:260px;overflow:auto;padding:4px}
+          padding:4px;display:flex;flex-direction:column}
+        .q{font:inherit;color:inherit;background:transparent;border:1px solid #c9d1e0;border-radius:6px;
+          padding:6px 8px;margin:2px 2px 4px;outline:none}
+        .q:focus{border-color:#2b5cff}
+        .list{max-height:260px;overflow:auto}
         .row{display:flex;flex-direction:column;gap:1px;padding:7px 9px;border-radius:6px;cursor:pointer}
         .row.on,.row:hover{background:#e8efff}
         .row.nofit{opacity:.55}
+        .empty{padding:7px 9px;color:#5b6578}
+        [hidden]{display:none!important}
         .l{font-weight:600}.v{color:#5b6578;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         @media (prefers-color-scheme:dark){.box{background:#1b2130;color:#e8ecf5;border-color:#33405c}
-          .row.on,.row:hover{background:#2a3858}.v{color:#9aa6bf}}
-      </style><div class="box"></div>`;
-    const box = root.querySelector(".box");
-    const rows = items.map((it, i) => {
+          .q{border-color:#33405c}.row.on,.row:hover{background:#2a3858}.v,.empty{color:#9aa6bf}}
+      </style><div class="box"><div class="list"></div></div>`;
+    const box = root.querySelector(".box"), list = root.querySelector(".list");
+    const rows = items.map((it) => {
       const fits = !!resolve(el, it);
       const row = document.createElement("div");
-      row.className = "row" + (i === 0 ? " on" : "") + (fits ? "" : " nofit");
+      row.className = "row" + (fits ? "" : " nofit");
       row.innerHTML = `<span class="l"></span><span class="v"></span>`;
       row.children[0].textContent = it.label;
       row.children[1].textContent = displayValue(it) + (fits ? "" : "  (doesn't match this field)");
-      row.addEventListener("mousedown", (e) => e.preventDefault()); // keep field focused
+      row.dataset.text = [it.label, it.keywords, displayValue(it), it.fileName].join(" ").toLowerCase();
+      row.addEventListener("mousedown", (e) => e.preventDefault()); // keep focus where it is
       row.addEventListener("click", async () => {
-        closePicker();
+        closePicker(withSearch);
         if (!(await fillField(el, it))) warn(`"${displayValue(it)}" doesn't match any option in this field.`);
       });
-      box.appendChild(row);
+      list.appendChild(row);
       return row;
     });
-    pickerState = { rows, idx: 0 };
+    pickerState = { el, rows, shown: rows, idx: 0, search: withSearch };
+    highlight(0);
+
+    if (withSearch) {
+      const q = document.createElement("input");
+      q.className = "q";
+      q.placeholder = "Search saved details…";
+      q.setAttribute("aria-label", "Search saved details");
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "No matches";
+      empty.hidden = true;
+      list.appendChild(empty);
+      // Every word typed must appear in the label, keywords or value.
+      q.addEventListener("input", () => {
+        const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+        pickerState.shown = rows.filter((row) => {
+          const ok = words.every((w) => row.dataset.text.includes(w));
+          row.hidden = !ok;
+          return ok;
+        });
+        empty.hidden = pickerState.shown.length > 0;
+        highlight(0);
+      });
+      // Keep the page's own shortcuts from reacting to what's typed here.
+      for (const t of ["keydown", "keyup", "keypress"]) q.addEventListener(t, (e) => e.stopPropagation());
+      box.prepend(q);
+    }
+
     document.documentElement.appendChild(host);
     document.addEventListener("keydown", onKey, true);
+    if (withSearch) root.querySelector(".q").focus({ preventScroll: true });
+    const mine = host;
     setTimeout(() => document.addEventListener("mousedown", function h(e) {
-      if (host && !e.composedPath().includes(host)) closePicker();
-      document.removeEventListener("mousedown", h, true);
+      if (host !== mine) return document.removeEventListener("mousedown", h, true); // already closed
+      if (!e.composedPath().includes(host)) { closePicker(); document.removeEventListener("mousedown", h, true); }
     }, true), 0);
   }
 
